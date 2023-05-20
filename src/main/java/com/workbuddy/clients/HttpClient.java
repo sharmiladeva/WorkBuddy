@@ -49,13 +49,14 @@ public class HttpClient {
         }
 
         // Get the response
+        boolean isError =false;
         int responseCode = connection.getResponseCode();
         BufferedReader reader;
         if (responseCode == HttpURLConnection.HTTP_OK) {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         } else {
             reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-            throw new RuntimeException("Bad Response");
+            isError =true;
         }
 
         // Read the response
@@ -65,6 +66,10 @@ public class HttpClient {
             response.append(line);
         }
         reader.close();
+        if(isError){
+            System.out.println(response);
+            throw new RuntimeException("Bad response");
+        }
         String content = parseAndGetContent(response.toString());
 
         // Close the connection
